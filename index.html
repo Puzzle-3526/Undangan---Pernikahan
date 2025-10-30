@@ -632,6 +632,8 @@ setInterval(createFlower, 200);
     </div>
   </div>
 </section>
+
+
         <hr class="my-4">
 
         <!-- guest form -->
@@ -765,6 +767,51 @@ setInterval(createFlower, 200);
       audio.preload = 'auto';
       document.body.appendChild(audio);
     })();
+
+    document.querySelectorAll('.btn-copy').forEach(button => {
+  button.addEventListener('click', async () => {
+    // cari nomor dalam kotak yang sama
+    const box = button.closest('.rekening-box')
+    if (!box) return
+    const numEl = box.querySelector('.rekening-num')
+    if (!numEl) return
+    const text = numEl.dataset.rek?.trim() || numEl.textContent.trim()
+
+    try {
+      await navigator.clipboard.writeText(text)
+      // beri umpan balik singkat ke pengguna
+      const original = button.textContent
+      button.textContent = 'Disalin'
+      button.disabled = true
+      setTimeout(() => {
+        button.textContent = original
+        button.disabled = false
+      }, 1400)
+    } catch (err) {
+      // fallback: seleksi dan perintah salin lama
+      try {
+        const textarea = document.createElement('textarea')
+        textarea.value = text
+        textarea.style.position = 'fixed'
+        textarea.style.left = '-9999px'
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+        const original = button.textContent
+        button.textContent = 'Disalin'
+        button.disabled = true
+        setTimeout(() => {
+          button.textContent = original
+          button.disabled = false
+        }, 1400)
+      } catch (e) {
+        alert('Gagal menyalin. Silakan salin manual.')
+      }
+    }
+  })
+})
+
 
     // accessibility: allow keyboard Enter on open button
     document.getElementById('openBtn').addEventListener('keyup', (e)=>{ if(e.key==='Enter') e.target.click(); });
